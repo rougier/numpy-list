@@ -1,5 +1,5 @@
-Numpy array list
-================
+Typed list base on numpy array
+==============================
 
 A Numpy array list is a strongly typed list whose type can be anything that can
 be interpreted as a numpy data type.

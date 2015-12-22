@@ -76,6 +76,16 @@ class ArrayList(object):
                 if isinstance(data[0], (list, tuple)):
                     itemsize = [len(l) for l in data]
                     data = [item for sublist in data for item in sublist]
+                # Special case for strings
+                elif isinstance(data[0], str):
+                    itemsize = [len(l) for l in data]
+                    data = [item for sublist in data for item in sublist]
+                    data = np.array(data, dtype='U1')
+            # Special case for strings
+            elif isinstance(data, str):
+                itemsize = len(data)
+                data = np.array(list(data), dtype='U1')
+                
             self._data = np.array(data, copy=False)
             self._size = self._data.size
 
@@ -130,7 +140,6 @@ class ArrayList(object):
         """ Describes the format of the elements in the buffer. """
         return self._data.dtype
 
-
     def reserve(self, capacity):
         """ Set current capacity of the underlying array"""
 
@@ -138,15 +147,20 @@ class ArrayList(object):
             capacity = int(2 ** np.ceil(np.log2(capacity)))
             self._data = np.resize(self._data, capacity)
 
-
     def __len__(self):
         """ x.__len__() <==> len(x) """
         return self._count
 
     def __str__(self):
-        s = '[ '
-        for item in self:
-            s += str(item) + ' '
+        # Special case for strings
+        if self.dtype=='U1':
+            return str([self[i] for i in range(len(self))])
+
+        s = '['
+        if len(self) > 0:
+            for i in range(len(self)-1):
+                s += str(self[i]) + ', '
+            s += str(self[-1])
         s += ']'
         return s
 
@@ -160,10 +174,16 @@ class ArrayList(object):
                 raise IndexError("Tuple index out of range")
             dstart = self._items[key][0]
             dstop = self._items[key][1]
+            # Special case for strings
+            if self.dtype == "<U1":
+                return "".join(self._data[dstart:dstop])
             return self._data[dstart:dstop]
 
         elif isinstance(key, slice):
             istart, istop, step = key.indices(len(self))
+            if self.dtype == "<U1":
+                return [self[i] for i in range(istart,istop,step)]
+                
             if istart > istop:
                 istart, istop = istop, istart
             dstart = self._items[istart][0]
@@ -313,6 +333,15 @@ class ArrayList(object):
         if isinstance(data, (list, tuple)) and isinstance(data[0], (list, tuple)):
             itemsize = [len(l) for l in data]
             data = [item for sublist in data for item in sublist]
+
+        # Special case for strings
+        if self.dtype == "<U1":
+            if isinstance(data, str):
+                itemsize = len(data)
+                data = list(data)
+            else:
+                itemsize = [len(l) for l in data]
+                data = [list(d) for d in data]
 
         data = np.array(data, copy=False).ravel()
         size = data.size

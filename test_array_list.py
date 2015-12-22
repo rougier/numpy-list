@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# Copyright (c) 2014, Nicolas P. Rougier. All rights reserved.
+# Copyright (c) 2016, Nicolas P. Rougier. All rights reserved.
 # Distributed under the terms of the new BSD License.
 # -----------------------------------------------------------------------------
 import unittest
@@ -87,7 +87,7 @@ class ArrayListDefault(unittest.TestCase):
     # -------------------------------
     def test_str(self):
         L = ArrayList([[0], [1, 2], [3, 4, 5], [6, 7, 8, 9]])
-        assert str(L) == '[ [0] [1 2] [3 4 5] [6 7 8 9] ]'
+        assert str(L) == '[[0], [1 2], [3 4 5], [6 7 8 9]]'
 
     # Get item using negative index
     # -----------------------------
